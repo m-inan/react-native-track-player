@@ -15,6 +15,8 @@ public class RNTrackPlayer: RCTEventEmitter {
     // MARK: - Attributes
     
     private var hasInitialized = false
+    private var hasShuffleMode = false
+    private var hasRepeatMode = false
 
     private lazy var player: RNTrackPlayerAudioPlayer = {
         let player = RNTrackPlayerAudioPlayer(reactEventEmitter: self)
@@ -256,6 +258,20 @@ public class RNTrackPlayer: RCTEventEmitter {
             return MPRemoteCommandHandlerStatus.success
         }
         
+        // add event listener for plaback end
+        player.event.playbackEnd.addListener(self, {
+            (data: AudioPlayer.PlaybackEndEventData) in
+            if data == .playedUntilEnd {
+                if self.hasRepeatMode { // repeat mode
+                    try? self.player.previous()
+                } else if self.hasShuffleMode { // shuffle mode
+                    let count = self.player.items.count
+                    let number = Int.random(in: 0..<count)
+                    try? self.player.jumpToItem(atIndex: number)
+                }
+            }
+        })
+        
         hasInitialized = true
         resolve(NSNull())
     }
@@ -417,6 +433,20 @@ public class RNTrackPlayer: RCTEventEmitter {
     public func seek(to time: Double, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         print("Seeking to \(time) seconds")
         player.seek(to: time)
+        resolve(NSNull())
+    }
+    
+    @objc(setShuffleMode:resolver:rejecter:)
+    public func setShuffleMode(shuffleMode: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        print("Setting shuffle mode to \(shuffleMode)")
+        self.hasShuffleMode = shuffleMode
+        resolve(NSNull())
+    }
+    
+    @objc(setRepeatMode:resolver:rejecter:)
+    public func setRepeatMode(repeatMode: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        print("Setting shuffle mode to \(repeatMode)")
+        self.hasRepeatMode = repeatMode
         resolve(NSNull())
     }
     
