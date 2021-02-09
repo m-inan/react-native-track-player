@@ -136,6 +136,16 @@ public class LocalPlayback extends ExoPlayback<SimpleExoPlayer> {
         }
     }
 
+    @Override
+    public void setShuffleMode(boolean shuffleMode) {
+      player.setShuffleModeEnabled(shuffleMode);
+    }
+
+    @Override
+    public void setRepeatMode(boolean repeatMode) {
+      player.setRepeatMode(repeatMode ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_OFF);
+    }
+
     private void resetQueue() {
         queue.clear();
 

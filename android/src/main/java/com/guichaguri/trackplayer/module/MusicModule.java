@@ -153,6 +153,7 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
 
     @ReactMethod
     public void setupPlayer(ReadableMap data, final Promise promise) {
+        Log.e("Tilpark", "setup player tilpark");
         final Bundle options = Arguments.toBundle(data);
 
         waitForConnection(() -> binder.setupPlayer(options, promise));
@@ -370,6 +371,22 @@ public class MusicModule extends ReactContextBaseJavaModule implements ServiceCo
     @ReactMethod
     public void getRate(final Promise callback) {
         waitForConnection(() -> callback.resolve(binder.getPlayback().getRate()));
+    }
+
+    @ReactMethod
+    public void setRepeatMode(boolean repeatMode, final Promise callback) {
+      waitForConnection(() -> {
+        binder.getPlayback().setRepeatMode(repeatMode);
+        callback.resolve(null);
+      });
+    }
+
+    @ReactMethod
+    public void setShuffleMode(boolean shuffleMode, final Promise callback) {
+      waitForConnection(() -> {
+        binder.getPlayback().setShuffleMode(shuffleMode);
+        callback.resolve(null);
+      });
     }
 
     @ReactMethod
