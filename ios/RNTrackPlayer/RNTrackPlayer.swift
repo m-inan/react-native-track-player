@@ -379,7 +379,14 @@ public class RNTrackPlayer: RCTEventEmitter {
     public func skipToNext(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         print("Skipping to next track")
         do {
+            let isPlaying = player.playerState == .playing
+            
             try player.next()
+            
+            if ( !isPlaying ) {
+                player.pause()
+            }
+            
             resolve(NSNull())
         } catch (_) {
             reject("queue_exhausted", "There is no tracks left to play", nil)
@@ -390,7 +397,14 @@ public class RNTrackPlayer: RCTEventEmitter {
     public func skipToPrevious(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         print("Skipping to next track")
         do {
+            let isPlaying = player.playerState == .playing
+            
             try player.previous()
+            
+            if ( !isPlaying ) {
+                player.pause()
+            }
+            
             resolve(NSNull())
         } catch (_) {
             reject("no_previous_track", "There is no previous track", nil)
