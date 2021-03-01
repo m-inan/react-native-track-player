@@ -459,7 +459,7 @@ public class RNTrackPlayer: RCTEventEmitter {
     
     @objc(setRepeatMode:resolver:rejecter:)
     public func setRepeatMode(repeatMode: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        print("Setting shuffle mode to \(repeatMode)")
+        print("Setting repeat mode to \(repeatMode)")
         self.hasRepeatMode = repeatMode
         resolve(NSNull())
     }
