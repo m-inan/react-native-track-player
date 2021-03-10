@@ -17,6 +17,7 @@ public class RNTrackPlayer: RCTEventEmitter {
     private var hasInitialized = false
     private var hasShuffleMode = false
     private var hasRepeatMode = false
+    private var currentIndex = 0
 
     private lazy var player: RNTrackPlayerAudioPlayer = {
         let player = RNTrackPlayerAudioPlayer(reactEventEmitter: self)
@@ -258,12 +259,26 @@ public class RNTrackPlayer: RCTEventEmitter {
             return MPRemoteCommandHandlerStatus.success
         }
         
+        player.event.stateChange.addListener(self, {(data: AudioPlayer.StateChangeEventData) in
+            if data == .playing {
+                self.currentIndex = self.player.currentIndex
+            }
+        })
+        
         // add event listener for plaback end
         player.event.playbackEnd.addListener(self, {
             (data: AudioPlayer.PlaybackEndEventData) in
             if data == .playedUntilEnd {
                 if self.hasRepeatMode { // repeat mode
-                    try? self.player.previous()
+                    if self.currentIndex == self.player.items.count - 1 {
+                        self.player.seek(to: 0.0)
+
+                        if self.player.playerState != .playing {
+                            self.player.play()
+                        }
+                    } else {
+                        try? self.player.previous()
+                    }
                 } else if self.hasShuffleMode { // shuffle mode
                     let count = self.player.items.count
                     let number = Int.random(in: 0..<count)
